@@ -95,7 +95,7 @@ function estadoRap(array $nivel, array $map, array $todos): string {
   <link rel="stylesheet" href="assets/css/estilos.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    /* Estilos específicos del panel de aprendiz — tema claro Duolingo */
+    /* Panel aprendiz — tema claro Duolingo */
     .contenedor-aprendiz {
       display: flex;
       gap: 0;
@@ -155,152 +155,91 @@ function estadoRap(array $nivel, array $map, array $todos): string {
       background: var(--verde-salud);
       color: #fff;
     }
-    /* Línea conectora del mapa */
+    /* ── Línea del mapa ── */
     .linea-mapa {
-      width: 3px;
-      height: 30px;
-      background: linear-gradient(to bottom, var(--verde-salud), var(--azul-institucional));
-      margin: 0 auto;
-      border-radius: 2px;
+      width: 4px; height: 32px;
+      background: var(--gris-claro);
+      margin: 0 auto; border-radius: 2px;
     }
+    /* ── Grupo de cada nodo (burbuja + pingüino lateral) ── */
     .grupo-rap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 6px;
+      display: flex; flex-direction: column;
+      align-items: center; position: relative;
+      margin-bottom: 4px;
     }
-    /* Círculo del RAP */
+    /* Pingüino al costado del nodo activo */
+    .pinguino-mapa {
+      position: absolute;
+      right: -100px; bottom: 0;
+      width: 72px;
+      animation: flotar 2.5s ease-in-out infinite;
+      pointer-events: none;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+    }
+    /* Burbuja circular del nodo */
     .burbuja-rap {
-      width: 68px;
-      height: 68px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.6rem;
-      border: 3px solid transparent;
-      transition: var(--transicion);
-      cursor: pointer;
-      position: relative;
+      width: 72px; height: 72px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.7rem; font-weight: 900;
+      cursor: pointer; transition: transform 0.15s;
+      border: 4px solid transparent; position: relative;
     }
+    .burbuja-rap:hover { transform: scale(1.08); }
     .burbuja-rap.completado {
-      background: var(--verde-salud);
-      border-color: var(--verde-acento);
-      color: #fff;
-      box-shadow: 0 0 22px rgba(46,204,113,0.5);
+      background: var(--verde); border-color: var(--verde-oscuro);
+      color: #fff; box-shadow: 0 4px 0 var(--verde-oscuro);
     }
-    .burbuja-rap.en_progreso {
-      background: linear-gradient(135deg, var(--azul-institucional), var(--azul-claro));
-      border-color: var(--azul-claro);
-      color: #fff;
-      animation: pulsar 2s infinite;
-    }
-    .burbuja-rap.disponible {
-      background: linear-gradient(135deg, var(--azul-institucional), var(--azul-claro));
-      border-color: var(--azul-claro);
-      color: #fff;
+    .burbuja-rap.disponible, .burbuja-rap.en_progreso {
+      background: var(--amarillo); border-color: #D4A800;
+      color: #fff; box-shadow: 0 4px 0 #D4A800;
+      animation: pulsar-duo 2s infinite;
     }
     .burbuja-rap.bloqueado {
-      background: var(--fondo-input);
-      border-color: var(--texto-tenue);
-      color: var(--texto-tenue);
-      cursor: not-allowed;
+      background: var(--gris-claro); border-color: #C0C0C0;
+      color: var(--gris-medio); cursor: not-allowed;
+      box-shadow: 0 4px 0 #C0C0C0;
     }
     .etiqueta-burbuja {
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--texto-secundario);
-      margin-top: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
+      font-size: 0.7rem; font-weight: 800;
+      color: var(--gris-medio); margin-top: 6px;
+      text-transform: uppercase; letter-spacing: 0.06em;
     }
-    /* Tooltip del mascot */
-    .mensaje-mascota {
-      position: absolute;
-      top: -60px;
-      right: -130px;
-      background: var(--fondo-panel);
-      border: 1px solid var(--borde-sutil);
-      border-radius: var(--radio-md) var(--radio-md) var(--radio-md) 0;
-      padding: 8px 12px;
-      font-size: var(--texto-xs);
-      color: var(--texto-principal);
-      white-space: nowrap;
-      pointer-events: none;
-    }
-    /* Panel de la derecha */
+    .burbuja-rap.disponible ~ .etiqueta-burbuja,
+    .burbuja-rap.en_progreso ~ .etiqueta-burbuja { color: var(--verde-oscuro); }
+    /* Panel derecho */
     .panel-lateral-derecho {
-      width: 310px;
-      padding: 28px 24px 28px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      border-left: 1px solid var(--borde-sutil);
-      background: var(--fondo-panel);
+      width: 320px; flex-shrink: 0;
+      padding: 28px 20px; display: flex;
+      flex-direction: column; gap: 14px;
+      border-left: 2px solid var(--borde);
     }
     .tarjeta-liga {
-      background: var(--fondo-tarjeta);
-      border: 1px solid var(--borde-sutil);
-      border-radius: var(--radio-md);
-      padding: 16px;
+      background: var(--blanco); border: 2px solid var(--borde);
+      border-radius: var(--radio); padding: 16px;
     }
     .tarjeta-liga .titulo-tarjeta {
-      font-size: var(--texto-sm);
-      font-weight: 600;
-      color: var(--acento-oro);
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-size: 0.78rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--gris-medio); margin-bottom: 8px;
+      display: flex; align-items: center; gap: 8px;
     }
-    .tarjeta-liga p {
-      font-size: var(--texto-xs);
-      color: var(--texto-secundario);
-    }
+    .tarjeta-liga .titulo-tarjeta a { margin-left:auto; color:var(--azul); font-size:0.7rem; }
+    .tarjeta-liga p { font-size: 0.82rem; color: var(--gris-medio); }
     .desafio-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--borde-sutil);
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0; border-bottom: 2px solid var(--borde);
     }
     .desafio-item:last-child { border-bottom: none; }
-    .desafio-item .icono-desafio {
-      font-size: 1.1rem;
-      color: var(--acento-oro);
-    }
-    .desafio-item .texto-desafio {
-      flex: 1;
-      font-size: var(--texto-xs);
-      color: var(--texto-principal);
-    }
-    .mini-progreso {
-      height: 6px;
-      background: var(--fondo-input);
-      border-radius: var(--radio-full);
-      overflow: hidden;
-      margin-top: 4px;
-    }
-    .mini-progreso .relleno {
-      height: 100%;
-      background: var(--verde-acento);
-      border-radius: var(--radio-full);
-    }
-    /* Botones para visitantes */
+    .desafio-texto { flex:1; font-size:0.82rem; font-weight:600; color:var(--gris-texto); }
+    .mini-barra { height:8px; background:var(--gris-claro); border-radius:var(--radio-full); overflow:hidden; margin-top:4px; }
+    .mini-barra .relleno { height:100%; background:var(--naranja); border-radius:var(--radio-full); }
+    .mini-texto { font-size:0.65rem; color:var(--gris-medio); margin-top:2px; }
     .caja-acceso {
-      background: var(--fondo-tarjeta);
-      border: 1px solid var(--borde-sutil);
-      border-radius: var(--radio-md);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      background: var(--blanco); border: 2px solid var(--borde);
+      border-radius: var(--radio); padding: 20px;
+      display: flex; flex-direction: column; gap: 10px; text-align:center;
     }
-    .caja-acceso p {
-      font-size: var(--texto-sm);
-      color: var(--texto-secundario);
-      margin-bottom: 6px;
-    }
+    .caja-acceso p { font-size:0.85rem; color:var(--gris-texto); font-weight:600; margin-bottom:4px; }
   </style>
 </head>
 <body>
@@ -352,6 +291,12 @@ function estadoRap(array $nivel, array $map, array $todos): string {
           <span>Perfil</span>
         </a>
       </li>
+      <li>
+        <a href="modulos/auth/cerrar-sesion.php" class="nav-enlace" style="color:var(--rojo);">
+          <i class="fas fa-right-from-bracket nav-icono"></i>
+          <span>Cerrar Sesión</span>
+        </a>
+      </li>
       <?php endif; ?>
     </ul>
   </nav>
@@ -382,7 +327,7 @@ function estadoRap(array $nivel, array $map, array $todos): string {
       <!-- MAPA DE PROGRESO -->
       <section class="zona-mapa">
         <?php
-        $ultimoEnProgreso = true;
+        $primerActivo = true; // Controla en cuál nodo aparece el pingüino
         foreach ($niveles as $nivel):
           $estado = $autenticado
               ? estadoRap($nivel, $mapaProgreso, $niveles)
@@ -391,58 +336,72 @@ function estadoRap(array $nivel, array $map, array $todos): string {
           $iconos = ['🏥','📋','❤️','💊','🚨','⭐'];
           $icono  = $iconos[$nivel['orden'] - 1] ?? '📘';
 
-          /* Porcentaje de progreso si aplica */
-          $porcentaje = $mapaProgreso[$nivel['rap_id']]['porcentaje'] ?? 0;
+          /* El pingüino aparece solo en el primer nodo disponible/en progreso */
+          $esPrincipal = ($estado === 'disponible' || $estado === 'en_progreso') && $primerActivo;
+          if ($esPrincipal) $primerActivo = false;
 
-          /* Emoji del estado */
-          $emojiEstado = match($estado) {
-            'completado'  => '✓',
-            'en_progreso' => '★',
-            'disponible'  => '★',
-            default       => '🔒',
+          /* Ícono dentro de la burbuja según estado */
+          $iconoBurbuja = match($estado) {
+            'completado'  => '<i class="fas fa-check" style="font-size:1.6rem;"></i>',
+            'en_progreso',
+            'disponible'  => '<i class="fas fa-star"  style="font-size:1.6rem;"></i>',
+            default       => '<i class="fas fa-lock"  style="font-size:1.4rem;"></i>',
           };
 
-          $mostrarEmpezar = ($estado === 'disponible' || $estado === 'en_progreso') && $ultimoEnProgreso;
-          if ($estado === 'completado') $ultimoEnProgreso = true;
-          elseif ($mostrarEmpezar) $ultimoEnProgreso = false;
+          $urlRap = $autenticado && $estado !== 'bloqueado'
+              ? 'modulos/aprendiz/rap.php?id=' . urlencode($nivel['rap_id'])
+              : '#';
         ?>
 
-        <!-- Cabecera del nivel -->
-        <div class="nodo-nivel-card">
-          <span class="insignia-nivel"><?= $icono ?></span>
-          <div class="info-nivel">
-            <div class="nombre-nivel">ETAPA 1, SECCIÓN <?= $nivel['orden'] ?></div>
-            <div class="sub-nivel"><?= limpiar($nivel['nombre']) ?></div>
+        <!-- Cabecera de sección (barra verde estilo Duolingo) -->
+        <div class="seccion-nivel-card">
+          <span style="font-size:1.2rem;"><?= $icono ?></span>
+          <div>
+            <div style="font-size:0.7rem;opacity:0.85;">ETAPA 1, SECCIÓN <?= $nivel['orden'] ?></div>
+            <div style="font-size:0.95rem;"><?= limpiar($nivel['nombre']) ?></div>
           </div>
           <?php if ($estado !== 'bloqueado'): ?>
-          <button class="btn-guia">
+          <button class="btn-guia" style="margin-left:auto;">
             <i class="fas fa-book-open"></i> GUÍA
           </button>
           <?php endif; ?>
         </div>
 
-        <!-- Línea + Burbuja del RAP -->
+        <!-- Línea + nodo con pingüino al costado si es el activo -->
         <div class="linea-mapa"></div>
         <div class="grupo-rap">
-          <?php
-          $urlRap = $autenticado && $estado !== 'bloqueado'
-              ? "modulos/aprendiz/rap.php?id=" . urlencode($nivel['rap_id'])
-              : "#";
-          ?>
           <div class="burbuja-rap <?= $estado ?>"
                onclick="<?= $estado !== 'bloqueado' ? "window.location='{$urlRap}'" : "mostrarMensajeBloqueado()" ?>"
                title="<?= limpiar($nivel['rap_titulo']) ?>"
                role="button"
                tabindex="<?= $estado === 'bloqueado' ? '-1' : '0' ?>">
-            <?= $emojiEstado ?>
-            <?php if ($mostrarEmpezar): ?>
-              <span class="mensaje-mascota">¡Tú puedes, enfermero/a! 💪</span>
-            <?php endif; ?>
+            <?= $iconoBurbuja ?>
           </div>
-          <?php if ($estado === 'en_progreso' || $mostrarEmpezar): ?>
-            <span class="etiqueta-burbuja">EMPEZAR</span>
+
+          <?php if ($esPrincipal): ?>
+          <!-- Pingüino mascota aparece junto al nodo activo -->
+          <svg class="pinguino-mapa" viewBox="0 0 110 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="55" cy="78" rx="38" ry="44" fill="#1A1A2E"/>
+            <ellipse cx="55" cy="84" rx="24" ry="30" fill="#FFFFFF"/>
+            <ellipse cx="55" cy="38" rx="28" ry="28" fill="#1A1A2E"/>
+            <ellipse cx="55" cy="42" rx="18" ry="18" fill="#FFFFFF"/>
+            <circle cx="47" cy="36" r="6" fill="#FFFFFF"/><circle cx="47" cy="36" r="3.5" fill="#1A1A2E"/><circle cx="48.5" cy="34.5" r="1.2" fill="#FFFFFF"/>
+            <circle cx="63" cy="36" r="6" fill="#FFFFFF"/><circle cx="63" cy="36" r="3.5" fill="#1A1A2E"/><circle cx="64.5" cy="34.5" r="1.2" fill="#FFFFFF"/>
+            <ellipse cx="55" cy="48" rx="6" ry="4" fill="#FF9600"/>
+            <ellipse cx="20" cy="75" rx="10" ry="22" fill="#1A1A2E" transform="rotate(-15 20 75)"/>
+            <ellipse cx="90" cy="75" rx="10" ry="22" fill="#1A1A2E" transform="rotate(15 90 75)"/>
+            <ellipse cx="43" cy="120" rx="12" ry="6" fill="#FF9600"/>
+            <ellipse cx="67" cy="120" rx="12" ry="6" fill="#FF9600"/>
+            <rect x="34" y="14" width="42" height="10" rx="5" fill="#FFFFFF"/>
+            <rect x="51" y="8" width="8" height="20" rx="4" fill="#FF4B4B"/>
+            <rect x="34" y="16" width="42" height="4" rx="2" fill="#E5E5E5"/>
+          </svg>
+          <?php endif; ?>
+
+          <?php if ($esPrincipal): ?>
+            <span class="etiqueta-burbuja" style="color:var(--verde-oscuro);">EMPEZAR</span>
           <?php elseif ($estado === 'completado'): ?>
-            <span class="etiqueta-burbuja" style="color: var(--verde-acento);">COMPLETADO</span>
+            <span class="etiqueta-burbuja" style="color:var(--verde);">COMPLETADO</span>
           <?php elseif ($estado === 'bloqueado'): ?>
             <span class="etiqueta-burbuja">BLOQUEADO</span>
           <?php endif; ?>
@@ -455,7 +414,7 @@ function estadoRap(array $nivel, array $map, array $todos): string {
       <!-- PANEL LATERAL DERECHO -->
       <aside class="panel-lateral-derecho" aria-label="Panel de gamificación">
 
-        <!-- Liga -->
+        <!-- ¡Compite en las ligas! -->
         <div class="tarjeta-liga">
           <div class="titulo-tarjeta">🏆 ¡Compite en las Ligas!</div>
           <p>Completa lecciones para empezar a competir</p>
@@ -465,40 +424,34 @@ function estadoRap(array $nivel, array $map, array $todos): string {
         <div class="tarjeta-liga">
           <div class="titulo-tarjeta">
             ⚡ Desafíos del día
-            <a href="#" style="margin-left:auto; font-size:0.7rem; color: var(--azul-claro);">VER TODOS</a>
+            <a href="#">VER TODOS</a>
           </div>
           <div class="desafio-item">
-            <span class="icono-desafio">⚡</span>
-            <div class="texto-desafio">
+            <span style="font-size:1.3rem; color:var(--naranja);">⚡</span>
+            <div class="desafio-texto">
               Gana 10 XP
-              <div class="mini-progreso">
-                <div class="relleno" style="width: <?= $autenticado ? min(100, ($usuario['xp_puntos'] ?? 0) / 10 * 100) : 0 ?>%"></div>
+              <div class="mini-barra">
+                <div class="relleno" style="width:<?= $autenticado ? min(100,($usuario['xp_puntos']??0)/10*100) : 0 ?>%"></div>
               </div>
-              <span style="font-size:0.65rem; color: var(--texto-tenue);">
-                <?= $autenticado ? min(10, $usuario['xp_puntos'] ?? 0) : 0 ?> / 10
-              </span>
+              <div class="mini-texto"><?= $autenticado ? min(10,$usuario['xp_puntos']??0) : 0 ?> / 10</div>
             </div>
+            <span style="font-size:1.4rem;">🎁</span>
           </div>
         </div>
 
-        <!-- Acceso para visitantes -->
+        <!-- CTA para visitantes / insignias para autenticados -->
         <?php if (!$autenticado): ?>
         <div class="caja-acceso">
           <p>¡Crea un perfil para guardar tu progreso!</p>
-          <a href="modulos/auth/login.php?accion=registrar" class="btn btn-primario">
+          <a href="modulos/auth/login.php?accion=registrar" class="btn btn-verde">
             <i class="fas fa-user-plus"></i> CREAR PERFIL
           </a>
-          <a href="modulos/auth/login.php" class="btn btn-secundario" style="background:#f0f0f0; color:#1A5276; border:1.5px solid #ccc;">
-            INGRESAR
-          </a>
+          <a href="modulos/auth/login.php" class="btn btn-blanco">INGRESAR</a>
         </div>
         <?php else: ?>
-        <!-- Insignias recientes -->
         <div class="tarjeta-liga">
           <div class="titulo-tarjeta">🎖 Mis Insignias</div>
-          <p style="color: var(--texto-tenue); font-size: 0.75rem;">
-            Completa RAPs y quizzes para ganar insignias.
-          </p>
+          <p>Completa RAPs y quizzes para ganar insignias.</p>
         </div>
         <?php endif; ?>
 

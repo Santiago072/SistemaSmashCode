@@ -82,10 +82,10 @@ $aprendices = $pdo->query(
   <!-- Barra lateral instructor -->
   <nav class="barra-lateral" aria-label="Navegación instructor">
     <div class="logo-app">
-      <div class="logo-icono">🏥</div>
+      <div class="logo-icono">🐧</div>
       <div>
         <div class="logo-nombre">Smash<span>Code</span></div>
-        <div style="font-size:0.6rem; color: var(--texto-tenue); padding-left:2px;">INSTRUCTOR</div>
+        <div style="font-size:0.6rem; color:var(--gris-medio); padding-left:2px;">INSTRUCTOR</div>
       </div>
     </div>
     <ul class="nav-lateral">
@@ -107,6 +107,11 @@ $aprendices = $pdo->query(
       <li>
         <a href="exportar.php" class="nav-enlace">
           <i class="fas fa-file-csv nav-icono"></i><span>Exportar CSV</span>
+        </a>
+      </li>
+      <li>
+        <a href="../../modulos/auth/cerrar-sesion.php" class="nav-enlace" style="color:var(--rojo);">
+          <i class="fas fa-right-from-bracket nav-icono"></i><span>Cerrar Sesión</span>
         </a>
       </li>
     </ul>
