@@ -5,12 +5,11 @@
  * @return PDO Instancia de la conexión
  */
 
-/* --- Parámetros de conexión --- */
-define('DB_HOST', 'localhost');
-define('DB_NOMBRE', 'smash_code');
-define('DB_USUARIO', 'root');
-define('DB_CLAVE', '');        // Cambiar en producción
-define('DB_CHARSET', 'utf8mb4');
+if (file_exists(__DIR__ . '/credenciales.php')) {
+    require_once __DIR__ . '/credenciales.php';
+} else {
+    require_once __DIR__ . '/credenciales.example.php';
+}
 
 /**
  * Retorna una conexión PDO configurada con consultas preparadas.

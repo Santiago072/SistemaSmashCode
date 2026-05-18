@@ -10,15 +10,23 @@ use PHPMailer\PHPMailer\Exception;
 function enviarCorreo(string $destinatario, string $asunto, string $cuerpo): bool {
     $mail = new PHPMailer(true);
     try {
+        // Cargar configuración de correo
+        if (!defined('SMTP_HOST')) {
+            if (file_exists(__DIR__ . '/../config/credenciales.php')) {
+                require_once __DIR__ . '/../config/credenciales.php';
+            } else {
+                require_once __DIR__ . '/../config/credenciales.example.php';
+            }
+        }
+
         // Configuración para Gmail SMTP
         $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com';
+        $mail->Host       = SMTP_HOST;
         $mail->SMTPAuth   = true;
-        // 👇 Coloca tu correo de Gmail y la Contraseña de Aplicación aquí 👇
-        $mail->Username   = 'santiagolizcanosuarez@gmail.com'; // O el correo que usen para enviar
-        $mail->Password   = 'AQUI_VA_TU_CONTRASENA_DE_APLICACION'; 
+        $mail->Username   = SMTP_USER; 
+        $mail->Password   = SMTP_PASS; 
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = 587;
+        $mail->Port       = SMTP_PORT;
 
         // Remitente y destinatario
         $mail->setFrom('no-reply@smashcode.edu.co', 'SmashCode SENA');

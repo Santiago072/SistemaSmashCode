@@ -76,8 +76,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['rol']              = $usuario['rol'];
                     $_SESSION['ultima_actividad'] = time();
 
-                    // Generar token JWT (secreto en producción debe ser variable de entorno)
-                    $secret_key = 'smashcode_super_secret_key';
+                    // Generar token JWT — clave de mínimo 32 caracteres (requerido por HS256)
+                    if (!defined('JWT_SECRET')) {
+                        if (file_exists('../../config/credenciales.php')) {
+                            require_once '../../config/credenciales.php';
+                        } else {
+                            require_once '../../config/credenciales.example.php';
+                        }
+                    }
+                    $secret_key = JWT_SECRET;
                     $payload = [
                         'iss' => 'smashcode',
                         'aud' => 'smashcode_users',

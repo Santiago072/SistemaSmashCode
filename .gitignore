@@ -1,0 +1,19 @@
+# SmashCode .gitignore
+
+# Ignorar archivos de configuración sensibles
+/config/credenciales.php
+
+# Ignorar dependencias de Composer (es buena práctica que cada entorno corra composer install)
+/vendor/
+
+# Ignorar archivos temporales y logs de Apache/PHP local
+*.log
+.tempmediaStorage/
+/artifacts/
+/scratch/
+.gemini/
+
+# Archivos del sistema operativo
+Thumbs.db
+Desktop.ini
+.DS_Store
