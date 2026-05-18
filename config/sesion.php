@@ -11,6 +11,11 @@ ini_set('session.cookie_samesite', 'Strict'); // Protección CSRF
 ini_set('session.use_strict_mode', 1);        // Solo IDs de sesión generados por el servidor
 ini_set('session.gc_maxlifetime', 1800);      // 30 minutos de inactividad
 
+// Obligar HTTPS para cookies si estamos sobre protocolo seguro
+if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+    ini_set('session.cookie_secure', 1);
+}
+
 define('TIEMPO_INACTIVIDAD', 1800); // 30 minutos en segundos
 
 /**

@@ -6,6 +6,15 @@
 require_once '../../config/conexion.php';
 require_once '../../config/sesion.php';
 require_once '../../includes/funciones.php';
+require_once '../../includes/correo.php';
+require_once '../../vendor/autoload.php';
+use Firebase\JWT\JWT;
+
+// En un entorno de producción, forzar HTTPS
+// if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') {
+//     header("Location: https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+//     exit();
+// }
 
 iniciarSesion();
 
@@ -49,9 +58,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $bloquear = $intentos >= 5 ? 1 : 0;
                     $pdo->prepare('UPDATE usuarios SET intentos_fallidos=?, bloqueado=? WHERE id=?')
                         ->execute([$intentos, $bloquear, $usuario['id']]);
-                    $error = $bloquear
-                        ? 'Cuenta bloqueada por demasiados intentos.'
-                        : 'Contraseña incorrecta. Intento ' . $intentos . ' de 5.';
+                    if ($bloquear) {
+                        $error = 'Cuenta bloqueada por demasiados intentos.';
+                        enviarCorreo(
+                            $correo,
+                            'Alerta de Seguridad - Cuenta Bloqueada',
+                            '<h1>Cuenta Bloqueada</h1><p>Tu cuenta ha sido bloqueada tras 5 intentos fallidos de inicio de sesión. Por favor, restablece tu contraseña para recuperar el acceso.</p>'
+                        );
+                    } else {
+                        $error = 'Contraseña incorrecta. Intento ' . $intentos . ' de 5.';
+                    }
                 } else {
                     $pdo->prepare('UPDATE usuarios SET intentos_fallidos=0 WHERE id=?')->execute([$usuario['id']]);
                     session_regenerate_id(true);
@@ -59,6 +75,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['nombre']           = $usuario['nombre_completo'];
                     $_SESSION['rol']              = $usuario['rol'];
                     $_SESSION['ultima_actividad'] = time();
+
+                    // Generar token JWT (secreto en producción debe ser variable de entorno)
+                    $secret_key = 'smashcode_super_secret_key';
+                    $payload = [
+                        'iss' => 'smashcode',
+                        'aud' => 'smashcode_users',
+                        'iat' => time(),
+                        'nbf' => time(),
+                        'exp' => time() + 1800, // 30 min
+                        'data' => [
+                            'id' => $usuario['id'],
+                            'rol' => $usuario['rol']
+                        ]
+                    ];
+                    $jwt = JWT::encode($payload, $secret_key, 'HS256');
+                    $_SESSION['jwt_token'] = $jwt;
 
                     if ($usuario['rol'] === 'admin')       redirigir('modulos/admin/dashboard.php');
                     elseif ($usuario['rol'] === 'instructor') redirigir('modulos/instructor/dashboard.php');
